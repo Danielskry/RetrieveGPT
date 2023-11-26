@@ -2,21 +2,6 @@
 This module provides a function for initializing a Language Model (LLM) using configurations
 from a specified YAML file. The LLM is created using the LlamaCpp class from the langchain library.
 It supports loading the model, setting up callback handlers, and handling configuration errors.
-
-Dependencies:
-- os
-- logging
-- dotenv
-- langchain.callbacks.streaming_stdout.StreamingStdOutCallbackHandler
-- langchain.callbacks.manager.AsyncCallbackManager
-- langchain.llms.LlamaCpp
-- yaml
-
-Usage:
-The main function provided by this module is initialize_llm(), which returns an instance of
-the LlamaCpp class initialized with the specified configurations. If an error occurs during
-initialization, a RuntimeError is raised with a descriptive error message.
-
 """
 
 import os

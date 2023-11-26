@@ -3,41 +3,6 @@ This module is designed for ingesting data (documents in various formats such as
 
 It provides functions for loading documents from a specified directory, initializing SentenceTransformer embeddings, and ingesting 
 data into Chroma Vector Database.
-
-Dependencies:
-- os
-- glob
-- logging
-- List, Any from typing
-- Settings from chromadb.config
-- Document from langchain.docstore.document
-- RecursiveCharacterTextSplitter from langchain.text_splitter
-- SentenceTransformer from sentence_transformers
-- jsonify from flask
-- Chroma from langchain.vectorstores
-- Various document loaders from langchain.document_loaders
-
-Global Settings:
-- CHROMA_SETTINGS: Chroma Vector Database settings including persistence directory, database implementation, and anonymized telemetry.
-
-File Extensions and Loaders:
-- DOC_LOADERS_MAPPING: A mapping of file extensions to custom document loaders and their arguments.
-
-Functions:
-- load_single_document(file_path: str) -> Document:
-  Load a single document based on its file extension.
-
-- load_documents_from_directory(source_dir: str) -> List[Document]:
-  Load multiple documents from a source directory using various loaders.
-
-- initialize_sentence_transformer_embeddings(model_name: str) -> object:
-  Initialize SentenceTransformer embeddings.
-
-- ingest_data(shared_components: object) -> Any:
-  Ingest data from source documents into Chroma Vector Database.
-
-Exception Handling:
-- Raises RuntimeError: If an error occurs during document loading or data ingestion processes.
 """
 import os
 import glob
