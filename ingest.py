@@ -17,7 +17,6 @@ from flask import jsonify
 
 from langchain.vectorstores.chroma import Chroma
 
-# Define the Chroma settings
 CHROMA_SETTINGS = Settings(
         persist_directory="db/",
         chroma_db_impl='duckdb+parquet',
@@ -37,7 +36,6 @@ from langchain.document_loaders import (
     UnstructuredWordDocumentLoader,
 )
 
-# Define a mapping of file extensions to custom document loaders and their arguments
 DOC_LOADERS_MAPPING = {
     ".csv": (CSVLoader, {}),
     ".doc": (UnstructuredWordDocumentLoader, {}),
