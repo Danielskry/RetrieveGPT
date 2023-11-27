@@ -73,8 +73,6 @@ def get_answer(shared_components: object) -> jsonify:
             chain_type_kwargs=chain_type_kwargs
         )
 
-        print("4")
-
         if query is not None and query != "":
             result = retrieval_qa(query)
             answer, docs = result['result'], result['source_documents']
