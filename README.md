@@ -1,5 +1,5 @@
 # RetrieveGPT
-A simple local large language model (LLM) [Flask](https://github.com/pallets/flask) app is employed to retrieve documents based on questions, utilizing Retrieval Augmented Generation (RAG) with [Llama2](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF)  and [Langchain](https://github.com/langchain-ai/langchain).
+A simple and fast local large language model (LLM) [Flask](https://github.com/pallets/flask) app that can be employed to retrieve internal documents based on questions, utilizing Retrieval Augmented Generation (RAG) with [Llama2](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF) and [Langchain](https://github.com/langchain-ai/langchain).
 
 ## Setup
 1. Clone [Llama2](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF):
@@ -29,7 +29,7 @@ python3 app.py
 With the ingest functionality, you can transform raw and unstructured data into a structured format within a local vector database with ChromaDB. To utilize this feature, simply deposit your documents into the designated `source_documents` directory. The ingest route will subsequently extract data from this directory, process the documents by dividing them into manageable chunks, generate embeddings, and finally, integrate the resulting data into the Chroma Vector DB, conveniently stored in the `db` directory.
 
 ## Get answer
-Retrieve insightful answers to your queries using the `/get_answer` endpoint. Input your question in the specified JSON format, and receive a detailed response providing relevant information.
+Retrieve insightful answers to your queries using the `/get_answer` endpoint. Input your question in the specified JSON format, and receive a detailed response providing relevant information based on the data you have ingested. The example below is based on ingesting the Git documentation from the `git.pdf` found in `source_documents`.
 
 **Input:**
 ```json
