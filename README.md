@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 5. Run Flask application:
 ```
-python3 app.py
+python3 run.py
 ```
 
 ## Ingest data
@@ -40,7 +40,7 @@ Retrieve insightful answers to your queries using the `/get_answer` endpoint. In
 **Output:**
 ```json
 {
-    "answer": " Git is a version control system used for source code management. It allows developers to track changes made to their codebase over time, collaborate with others, and manage different versions of their software.",
+    "answer": " Git is a version control system used for source code management in software development. It allows developers to track changes made to their codebase over time, collaborate with others on the same project, and easily revert back to previous versions if necessary.",
     "query": {
         "query": "What is Git?"
     },

@@ -1,0 +1,9 @@
+chroma_config:
+  source_directory_path: "source_directory/"
+  persist_directory_path: "persist_directory/"
+  chroma_db_impl: "duckdb+parquet"
+  anonymized_telemetry: False
+  source_directory: "source_documents/"
+  persist_directory: "db/"
+  chunk_size: 500
+  chunk_overlap: 50

@@ -1,5 +1,5 @@
 llm_config:
-  model_path: "models/Llama-2-7B-Chat-GGUF/llama-2-7b-chat.Q8_0.gguf"
+  model_path: "app/models/Llama-2-7B-Chat-GGUF/llama-2-7b-chat.Q8_0.gguf"
   model_type: "Llama"
   n_gpu_layers: 30
   n_ctx: 840

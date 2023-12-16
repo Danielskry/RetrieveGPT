@@ -1,9 +1,8 @@
 """
-This module provides a function for initializing a Language Model (LLM) using configurations
-from a specified YAML file. The LLM is created using the LlamaCpp class from the langchain library.
+This module provides a function for initializing the Large Language Model (LLM) using configurations
+from the specified YAML file. The LLM is created using the LlamaCpp class from the langchain library.
 It supports loading the model, setting up callback handlers, and handling configuration errors.
 """
-
 import os
 import logging
 from dotenv import load_dotenv
@@ -12,9 +11,13 @@ from langchain.callbacks.manager import AsyncCallbackManager
 from langchain.llms import LlamaCpp
 import yaml
 
+from app.config import BaseConfig as app_config
+
+logger = logging.getLogger(app_config.APP_NAME)
+
 def initialize_llm() -> object:
     """
-    Initialize a Language Model (LLM) using configurations from YAML file.
+    Initialize Large Language Model (LLM) using configurations from YAML file.
 
     Returns:
         object: An instance of the LlamaCpp class initialized with the specified configurations.
@@ -34,10 +37,10 @@ def initialize_llm() -> object:
 
         model_path: str = llm_config['llm_config']['model_path']
 
-        logging.info('Trying to load language model on path %s', model_path)
-            
+        logger.info('Trying to load language model on path %s', model_path)
+
         callback_manager = AsyncCallbackManager([StreamingStdOutCallbackHandler()])
-        
+
         llm = LlamaCpp(
             model_path=model_path,
             n_gpu_layers=llm_config['llm_config']['n_gpu_layers'],
@@ -54,10 +57,10 @@ def initialize_llm() -> object:
             verbose=llm_config['llm_config']['verbose'],
             callback_manager=callback_manager,
         )
-        
-        logging.info("Successfully loaded model with pipeline!")
+
+        logger.info("Successfully loaded model with pipeline!")
         return llm
 
     except Exception as e:
-        logging.error(f"An error occurred during LLM initialization: {e}")
+        logger.error(f"An error occurred during LLM initialization: {e}")
         raise RuntimeError("Failed to initialize Language Model (LLM). Please check configurations.") from e

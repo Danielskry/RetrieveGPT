@@ -1,55 +1,25 @@
 """
-This module is designed for ingesting data (documents in various formats such as pdf, txt, etc.) into our Chroma Vector Database.
+This module is designed for ingesting data (documents in various formats such as pdf, txt, etc.) 
+into our Chroma Vector Database.
 
-It provides functions for loading documents from a specified directory, initializing SentenceTransformer embeddings, and ingesting 
-data into Chroma Vector Database.
+It provides functions for loading documents from a specified directory, initializing 
+SentenceTransformer embeddings, and ingesting data into Chroma Vector Database.
 """
 import os
 import glob
 import logging
 from typing import List, Any
-from chromadb.config import Settings
 from langchain.docstore.document import Document
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
+from langchain.vectorstores.chroma import Chroma
 from flask import jsonify
 
-from langchain.vectorstores.chroma import Chroma
+from app.chroma_config import DOC_LOADERS_MAPPING, CHROMA_SETTINGS, chroma_config
+from app.config import BaseConfig as app_config
 
-CHROMA_SETTINGS = Settings(
-        persist_directory="db/",
-        chroma_db_impl='duckdb+parquet',
-        anonymized_telemetry=False
-)
-
-from langchain.document_loaders import (
-    CSVLoader,
-    EverNoteLoader,
-    PDFMinerLoader,
-    TextLoader,
-    UnstructuredEPubLoader,
-    UnstructuredHTMLLoader,
-    UnstructuredMarkdownLoader,
-    UnstructuredODTLoader,
-    UnstructuredPowerPointLoader,
-    UnstructuredWordDocumentLoader,
-)
-
-DOC_LOADERS_MAPPING = {
-    ".csv": (CSVLoader, {}),
-    ".doc": (UnstructuredWordDocumentLoader, {}),
-    ".docx": (UnstructuredWordDocumentLoader, {}),
-    ".enex": (EverNoteLoader, {}),
-    ".epub": (UnstructuredEPubLoader, {}),
-    ".html": (UnstructuredHTMLLoader, {}),
-    ".md": (UnstructuredMarkdownLoader, {}),
-    ".odt": (UnstructuredODTLoader, {}),
-    ".pdf": (PDFMinerLoader, {}),
-    ".ppt": (UnstructuredPowerPointLoader, {}),
-    ".pptx": (UnstructuredPowerPointLoader, {}),
-    ".txt": (TextLoader, {"encoding": "utf8"}),
-}
+logger = logging.getLogger(app_config.APP_NAME)
 
 class CustomSentenceTransformerEmbeddings:
     """
@@ -85,7 +55,7 @@ class CustomSentenceTransformerEmbeddings:
                 List[float]: The embedded vector represented as a list of floats.
     """
 
-    def __init__(self, model_name):
+    def __init__(self, model_name : str) -> None:
         """
         Initializes the CustomSentenceTransformerEmbeddings instance with a specified
         SentenceTransformer model by name.
@@ -95,7 +65,7 @@ class CustomSentenceTransformerEmbeddings:
         """
         self.embedding_function = SentenceTransformer(model_name)
 
-    def embed_documents(self, texts):
+    def embed_documents(self, texts : List[str]) -> List[List[float]]:
         """
         Embeds a list of documents into numerical vectors using the underlying
         SentenceTransformer model.
@@ -109,7 +79,7 @@ class CustomSentenceTransformerEmbeddings:
         embeddings = self.embedding_function.encode(texts, convert_to_numpy=True).tolist()
         return [list(map(float, e)) for e in embeddings]
 
-    def embed_query(self, text):
+    def embed_query(self, text : str) -> List[float]:
         """
         Embeds a single query text into a numerical vector using the underlying
         SentenceTransformer model.
@@ -123,12 +93,12 @@ class CustomSentenceTransformerEmbeddings:
         embeddings = self.embedding_function.encode([text], convert_to_numpy=True).tolist()
         return [list(map(float, e)) for e in embeddings][0]
 
-def initialize_sentence_transformer_embeddings(model_name: str) -> object:
+def initialize_sentence_transformer_embeddings(model_path: str) -> object:
     """
     Initialize SentenceTransformer embeddings.
 
     Parameters:
-    - model_name (str): The name of the pre-trained SentenceTransformer model.
+    - model_path (str): The local path to the pre-trained SentenceTransformer model.
 
     Returns:
     - object: An object with methods for embedding documents and queries.
@@ -138,8 +108,8 @@ def initialize_sentence_transformer_embeddings(model_name: str) -> object:
     """
 
     try:
-        logging.info("Loading SentenceTransformer embedding function...")
-        return CustomSentenceTransformerEmbeddings(model_name)
+        logger.info("Trying to load SentenceTransformer embeddings on path %s", model_path)
+        return CustomSentenceTransformerEmbeddings(model_path)
 
     except Exception as exception:
         raise RuntimeError(f"Error initializing custom embeddings: {exception}") from exception
@@ -164,7 +134,7 @@ def load_single_document(file_path: str) -> Document:
             loader_class, loader_args = DOC_LOADERS_MAPPING[ext]
             loader = loader_class(file_path, **loader_args)
 
-            logging.info("Document loaded successfully!")
+            logger.info("Document loaded successfully!")
             return loader.load()[0]
 
         raise ValueError(f"Unsupported file extension '{ext}'")
@@ -212,15 +182,14 @@ def ingest_data(shared_components: object) -> Any:
     """
 
     try:
-        # Load environment variables
-        persist_directory = "db"  # Chroma Vector DB
-        source_directory = "source_documents"  # Where documents are loaded from
+        # Where documents are loaded from
+        source_directory = chroma_config['chroma_config']['source_directory']
 
         # Load documents and split into chunks
-        logging.info('Loading documents from %s', source_directory)
+        logger.info('Loading documents from %s', source_directory)
 
-        chunk_size = 500
-        chunk_overlap = 50
+        chunk_size = chroma_config['chroma_config']['chunk_size']
+        chunk_overlap = chroma_config['chroma_config']['chunk_overlap']
         documents = load_documents_from_directory(source_directory)
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
@@ -228,8 +197,8 @@ def ingest_data(shared_components: object) -> Any:
             )
         texts = text_splitter.split_documents(documents)
 
-        logging.info('Loaded %s documents from %s', len(documents), source_directory)
-        logging.info('Split into %s chunks of text (max. %s characters each)', len(texts), chunk_size)
+        logger.info('Loaded %s documents from %s', len(documents), source_directory)
+        logger.info('Split into %s chunks of text (max. %s characters each)', len(texts), chunk_size)
 
         # Create embeddings
         embeddings = shared_components.get_embeddings()
@@ -238,13 +207,13 @@ def ingest_data(shared_components: object) -> Any:
         chroma_db = Chroma.from_documents(
             texts,
             embeddings,
-            persist_directory=persist_directory,
+            persist_directory=CHROMA_SETTINGS.persist_directory,
             client_settings=CHROMA_SETTINGS,
             )
         chroma_db.persist()
         chroma_db = None
 
-        logging.info("Successfully ingested data!")
+        logger.info("Successfully ingested data!")
         return jsonify(response="Successfully ingested data!")
 
     except Exception as exception:
