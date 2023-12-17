@@ -9,7 +9,7 @@ from app.retrieve import get_answer
 
 app = create_app()
 
-# Initialize the shared components for LLM and embeddings
+# Initialize the shared components for embeddings
 shared_components = SharedComponents()
 
 @app.route('/status', methods=['GET'])

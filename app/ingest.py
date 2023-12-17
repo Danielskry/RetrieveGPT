@@ -18,6 +18,7 @@ from flask import jsonify
 
 from app.chroma_config import DOC_LOADERS_MAPPING, CHROMA_SETTINGS, chroma_config
 from app.config import BaseConfig as app_config
+from app.utils.tracktime import tracktime
 
 logger = logging.getLogger(app_config.APP_NAME)
 
@@ -167,6 +168,7 @@ def load_documents_from_directory(source_dir: str) -> List[Document]:
     except Exception as exception:
         raise RuntimeError(f"Error loading documents from directory: {exception}") from exception
 
+@tracktime
 def ingest_data(shared_components: object) -> Any:
     """
     Ingest data from source documents into Chroma Vector DB.

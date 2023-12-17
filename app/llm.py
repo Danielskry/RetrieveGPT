@@ -4,16 +4,16 @@ from the specified YAML file. The LLM is created using the LlamaCpp class from t
 It supports loading the model, setting up callback handlers, and handling configuration errors.
 """
 import logging
+from typing import Any
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.manager import AsyncCallbackManager
 from langchain.llms import LlamaCpp
 
 from app.config import BaseConfig as app_config
-from app.utils.load_yaml_config import load_yaml_config
 
 logger = logging.getLogger(app_config.APP_NAME)
 
-def initialize_llm() -> object:
+def initialize_llm(model_config: Any) -> object:
     """
     Initialize Large Language Model (LLM) using configurations from YAML file.
 
@@ -26,12 +26,7 @@ def initialize_llm() -> object:
 
     """
     try:
-        llm_config = load_yaml_config("MODEL_CONFIGURATION_PATH")
-
-        if llm_config is None:
-            raise ValueError("Failed to load embeddings configuration.")
-
-        model_path: str = llm_config['llm_config']['model_path']
+        model_path: str = model_config['llm_config']['model_path']
 
         logger.info('Trying to load language model on path %s', model_path)
 
@@ -39,18 +34,18 @@ def initialize_llm() -> object:
 
         llm = LlamaCpp(
             model_path=model_path,
-            n_gpu_layers=llm_config['llm_config']['n_gpu_layers'],
-            n_ctx=llm_config['llm_config']['n_ctx'],
-            n_batch=llm_config['llm_config']['n_batch'],
-            n_threads=llm_config['llm_config']['n_threads'],
-            temperature=llm_config['llm_config']['temperature'],
-            top_p=llm_config['llm_config']['top_p'],
-            top_k=llm_config['llm_config']['top_k'],
-            repeat_penalty=llm_config['llm_config']['repeat_penalty'],
-            last_n_tokens_size=llm_config['llm_config']['last_n_tokens'],
-            max_tokens=llm_config['llm_config']['max_tokens'],
-            f16_kv=llm_config['llm_config']['f16_kv'],
-            verbose=llm_config['llm_config']['verbose'],
+            n_gpu_layers=model_config['llm_config']['n_gpu_layers'],
+            n_ctx=model_config['llm_config']['n_ctx'],
+            n_batch=model_config['llm_config']['n_batch'],
+            n_threads=model_config['llm_config']['n_threads'],
+            temperature=model_config['llm_config']['temperature'],
+            top_p=model_config['llm_config']['top_p'],
+            top_k=model_config['llm_config']['top_k'],
+            repeat_penalty=model_config['llm_config']['repeat_penalty'],
+            last_n_tokens_size=model_config['llm_config']['last_n_tokens'],
+            max_tokens=model_config['llm_config']['max_tokens'],
+            f16_kv=model_config['llm_config']['f16_kv'],
+            verbose=model_config['llm_config']['verbose'],
             callback_manager=callback_manager,
         )
 
