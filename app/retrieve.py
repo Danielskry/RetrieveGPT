@@ -23,7 +23,9 @@ def create_chroma_retriever(embeddings : Any) -> object:
 
     retriever = chroma_db.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={"score_threshold": 0.3}
+        search_kwargs={
+            "score_threshold": chroma_config['chroma_config']['similarity_score_threshold']
+        }
     )
 
     return retriever

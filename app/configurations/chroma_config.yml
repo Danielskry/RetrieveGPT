@@ -7,3 +7,4 @@ chroma_config:
   persist_directory: "db/"
   chunk_size: 500
   chunk_overlap: 50
+  similarity_score_threshold: 0.3
