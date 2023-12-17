@@ -8,7 +8,7 @@ from app.config import BaseConfig as app_config
 
 logger = logging.getLogger(app_config.APP_NAME)
 
-def tracktime(func : Any) -> Any:
+def tracktime(func: Any) -> Any:
     """Used as a decorator for tracking time for
     methods. Prints the time used.
 
@@ -19,7 +19,8 @@ def tracktime(func : Any) -> Any:
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        logger.info("%s executed in: %s seconds", func.__name__, (end_time - start_time))
+        elapsed_time = round(end_time - start_time, 2)
+        logger.info("%s executed in: %s seconds", func.__name__, elapsed_time)
         return result
 
     return wrapper

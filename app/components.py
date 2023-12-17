@@ -1,12 +1,10 @@
 ''' Methods for initializing and accessing embeddings and the large language model (LLM). '''
-import os
 import logging
-from dotenv import load_dotenv
-import yaml
 
 from app.config import BaseConfig as app_config
-from .ingest import initialize_sentence_transformer_embeddings
-from .llm import initialize_llm
+from app.utils.load_yaml_config import load_yaml_config
+from app.ingest import initialize_sentence_transformer_embeddings
+from app.llm import initialize_llm
 
 logger = logging.getLogger(app_config.APP_NAME)
 
@@ -18,13 +16,10 @@ class SharedComponents:
         Initializes a SharedComponents.
         """
 
-        # Load environment variables from .env file
-        load_dotenv()
+        embeddings_config = load_yaml_config("EMBEDDINGS_CONFIGURATION_PATH")
 
-        embeddings_config_path = os.environ.get("EMBEDDINGS_CONFIGURATION_PATH")
-
-        with open(embeddings_config_path, 'r', encoding="utf-8") as file:
-            embeddings_config = yaml.safe_load(file)
+        if embeddings_config is None:
+            raise ValueError("Failed to load embeddings configuration.")
 
         self.embeddings_instance = initialize_sentence_transformer_embeddings(
             model_path=embeddings_config['embeddings_config']['model']

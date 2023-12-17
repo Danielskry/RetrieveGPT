@@ -3,15 +3,13 @@ This module provides a function for initializing the Large Language Model (LLM) 
 from the specified YAML file. The LLM is created using the LlamaCpp class from the langchain library.
 It supports loading the model, setting up callback handlers, and handling configuration errors.
 """
-import os
 import logging
-from dotenv import load_dotenv
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.manager import AsyncCallbackManager
 from langchain.llms import LlamaCpp
-import yaml
 
 from app.config import BaseConfig as app_config
+from app.utils.load_yaml_config import load_yaml_config
 
 logger = logging.getLogger(app_config.APP_NAME)
 
@@ -28,12 +26,10 @@ def initialize_llm() -> object:
 
     """
     try:
-        # Load up configurations
-        load_dotenv()
-        llm_config_path: str = os.environ.get("MODEL_CONFIGURATION_PATH")
+        llm_config = load_yaml_config("MODEL_CONFIGURATION_PATH")
 
-        with open(llm_config_path, 'r', encoding="utf-8") as file:
-            llm_config = yaml.safe_load(file)
+        if llm_config is None:
+            raise ValueError("Failed to load embeddings configuration.")
 
         model_path: str = llm_config['llm_config']['model_path']
 
@@ -62,5 +58,5 @@ def initialize_llm() -> object:
         return llm
 
     except Exception as e:
-        logger.error(f"An error occurred during LLM initialization: {e}")
-        raise RuntimeError("Failed to initialize Language Model (LLM). Please check configurations.") from e
+        logger.error("An error occurred during LLM initialization: %s", e)
+        raise RuntimeError("Failed to initialize LLM. Please check configurations.") from e

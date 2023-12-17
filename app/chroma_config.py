@@ -1,8 +1,4 @@
 ''' Chroma config '''
-import os
-from dotenv import load_dotenv
-import yaml
-
 from chromadb.config import Settings
 
 from langchain.document_loaders import (
@@ -17,6 +13,8 @@ from langchain.document_loaders import (
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
 )
+
+from app.utils.load_yaml_config import load_yaml_config
 
 # Define document loaders mapping
 DOC_LOADERS_MAPPING = {
@@ -34,15 +32,11 @@ DOC_LOADERS_MAPPING = {
     ".txt": (TextLoader, {"encoding": "utf8"}),
 }
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Get the path to the Chroma configuration file from the environment variables
-chroma_config_path = os.environ.get("CHROMA_CONFIGURATION_PATH")
-
 # Load Chroma configuration from YAML file
-with open(chroma_config_path, 'r', encoding="utf-8") as file:
-    chroma_config = yaml.safe_load(file)
+chroma_config = load_yaml_config("CHROMA_CONFIGURATION_PATH")
+
+if chroma_config is None:
+    raise ValueError("Failed to load embeddings configuration.")
 
 # Create Chroma settings object
 CHROMA_SETTINGS = Settings(
