@@ -1,6 +1,8 @@
 # RetrieveGPT
 A simple and fast local large language model (LLM) [Flask](https://github.com/pallets/flask) app that can be employed to retrieve internal documents based on questions, utilizing Retrieval Augmented Generation (RAG) with [Llama2](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF) and [Langchain](https://github.com/langchain-ai/langchain).
 
+![Untitled Diagram drawio(5)](https://github.com/Danielskry/RetrieveGPT/assets/15195014/a54d1970-c5db-466b-ad39-0749bec4221e)
+
 ## Setup
 1. Clone [Llama2](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF):
 ```bash
